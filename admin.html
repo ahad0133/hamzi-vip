@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HAMZI ADMIN PANEL</title>
+
+<style>
+body{
+    font-family:Arial;
+    background:#020617;
+    color:#fff;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.box{
+    background:#0f172a;
+    padding:25px;
+    border-radius:20px;
+    width:350px;
+    text-align:center;
+}
+
+h2{
+    margin-bottom:15px;
+}
+
+input,select{
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    border-radius:10px;
+    border:none;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:20px;
+    background:#6366f1;
+    color:#fff;
+    cursor:pointer;
+}
+
+.result{
+    margin-top:15px;
+    background:#22c55e;
+    padding:10px;
+    border-radius:10px;
+    word-break:break-all;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>🔑 Generate Key</h2>
+
+<select id="time">
+<option value="3600">1 Hour</option>
+<option value="86400">1 Day</option>
+<option value="604800">7 Days</option>
+<option value="2592000">30 Days</option>
+</select>
+
+<button onclick="gen()">Generate</button>
+
+<div id="out" class="result"></div>
+
+</div>
+
+<script>
+const BASE_URL = "https://hamzi-system.onrender.com";
+
+async function gen(){
+
+const time=document.getElementById('time').value;
+
+const res=await fetch(BASE_URL + '/generate-key',{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify({duration:time})
+});
+
+const data=await res.json();
+
+document.getElementById('out').innerText = data.key;
+}
+</script>
+
+</body>
+</html>
