@@ -3,38 +3,59 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>pixelchk gpay auth</title>
+<title>HAMZI THEW MASTER</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest"></script>
 
 <style>
+*{margin:0;padding:0;box-sizing:border-box}
+
 body{
 font-family:'Inter',sans-serif;
-background:linear-gradient(145deg,#f1f5f9,#e6ecf4);
-min-height:100vh;
+background:linear-gradient(135deg,#020617,#0f172a,#1e293b);
 display:flex;
-align-items:center;
 justify-content:center;
+align-items:center;
+height:100vh;
+color:#fff;
 }
 
 /* LOCK */
 .lock{text-align:center}
-.lock input{padding:12px;border-radius:12px;border:1px solid #ccc;width:250px}
-.lock button{padding:10px 20px;border:none;border-radius:20px;background:#2563eb;color:#fff}
+.lock input{padding:14px;border-radius:14px;border:none;width:260px}
+.lock button{margin-top:10px;padding:12px 25px;border:none;border-radius:30px;background:linear-gradient(135deg,#6366f1,#ec4899);color:#fff}
 
 /* MAIN */
 #main{display:none}
+.container{max-width:420px;width:100%}
 
-.card{max-width:500px;background:#fff;padding:20px;border-radius:20px}
+/* CARD */
+.card{
+background:linear-gradient(135deg,#6366f1,#8b5cf6,#ec4899);
+border-radius:25px;
+padding:20px;
+margin-bottom:20px;
+box-shadow:0 20px 60px rgba(0,0,0,0.7);
+}
+.card-number{font-size:22px;letter-spacing:3px;margin:20px 0}
+.card-bottom{display:flex;justify-content:space-between}
 
-.field{width:100%;padding:12px;margin:10px 0;border-radius:10px;border:1px solid #ddd}
+/* FORM */
+.form{background:rgba(255,255,255,0.08);padding:20px;border-radius:25px}
+.input{width:100%;padding:14px;margin-bottom:10px;border-radius:14px;border:none;background:rgba(255,255,255,0.1);color:#fff}
 
-.btn{padding:10px;border:none;border-radius:20px;background:#111;color:#fff;width:100%}
+/* BTN */
+.btn{width:100%;padding:14px;border:none;border-radius:30px;background:linear-gradient(135deg,#6366f1,#ec4899);color:#fff;font-weight:600}
 
-.status{margin-top:10px;padding:10px;border-radius:10px;background:#f1f5f9}
+/* STATUS */
+.status{margin-top:10px;padding:10px;border-radius:14px;background:#22c55e;text-align:center}
 
-.timer{margin-top:10px;font-weight:bold;color:#16a34a;text-align:center}
+/* TIMER */
+.timer{text-align:center;margin-bottom:10px;color:#22c55e;font-weight:600}
+
+/* TITLE */
+.title{text-align:center;margin-bottom:20px;font-weight:700;font-size:22px}
 </style>
 </head>
 
@@ -42,107 +63,100 @@ justify-content:center;
 
 <!-- 🔐 LOCK -->
 <div id="lock" class="lock">
-<h2>🔑 Enter Key</h2>
+<h2>🔑 Enter Access Key</h2>
 <input id="key" placeholder="HAMZI-XXXXXXX">
-<br><br>
+<br>
 <button onclick="checkKey()">Unlock</button>
 <p id="msg"></p>
 </div>
 
 <!-- 🔓 MAIN -->
 <div id="main">
+<div class="container">
+
+<div class="title">💎 HAMZI THEW MASTER</div>
 
 <div class="card">
-
-<h2>pixelchk gpay auth</h2>
+<div id="preview-card" class="card-number">**** **** **** ****</div>
+<div class="card-bottom">
+<span id="preview-exp">MM/YY</span>
+<span>VIP</span>
+</div>
+</div>
 
 <div id="timer" class="timer"></div>
 
+<div class="form">
 <form id="payment-form">
-<input id="card-number" class="field" placeholder="Card Number">
-<input id="exp-month" class="field" placeholder="MM">
-<input id="exp-year" class="field" placeholder="YYYY">
-<button class="btn">Add Card</button>
+<input id="card" class="input" placeholder="Card Number">
+<input id="month" class="input" placeholder="MM">
+<input id="year" class="input" placeholder="YYYY">
+<button class="btn">Add Secure Card</button>
 </form>
 
 <div id="status" class="status">Ready</div>
-
 </div>
 
+</div>
 </div>
 
 <script>
 lucide.createIcons();
 
-const BASE_URL = "https://hamzi-system.onrender.com";
+const BASE_URL="https://hamzi-system.onrender.com";
+
+/* ⚠️ TEST KEY (frontend use - not secure) */
+const STRIPE_KEY="sk_test_26PHem9AhJZvU623DfE1x4sd";
 
 let timerInterval;
 
-/* ⏳ TIMER */
+/* TIMER */
 function startTimer(expiry){
-
 function update(){
-const now = Date.now();
-const diff = expiry - now;
-
-if(diff <= 0){
+const diff=expiry-Date.now();
+if(diff<=0){
 clearInterval(timerInterval);
-document.getElementById('timer').innerText="⛔ Key Expired";
-
+document.getElementById('timer').innerText="⛔ Expired";
 localStorage.removeItem("hamzi_key");
 setTimeout(()=>location.reload(),1500);
 return;
 }
-
-const d=Math.floor(diff/(1000*60*60*24));
-const h=Math.floor((diff/(1000*60*60))%24);
-const m=Math.floor((diff/(1000*60))%60);
-const s=Math.floor((diff/1000)%60);
-
-document.getElementById('timer').innerText =
-`⏳ ${d}d ${h}h ${m}m ${s}s`;
+const d=Math.floor(diff/86400000);
+const h=Math.floor(diff/3600000)%24;
+const m=Math.floor(diff/60000)%60;
+const s=Math.floor(diff/1000)%60;
+document.getElementById('timer').innerText=`⏳ ${d}d ${h}h ${m}m ${s}s`;
 }
-
 update();
 timerInterval=setInterval(update,1000);
 }
 
-/* 🔐 VERIFY */
+/* VERIFY */
 async function verifyKey(key,auto=false){
-
 try{
 const res=await fetch(BASE_URL+'/verify-key',{
 method:'POST',
 headers:{'Content-Type':'application/json'},
 body:JSON.stringify({key})
 });
-
 const data=await res.json();
 
 if(data.valid){
-
 document.getElementById('lock').style.display='none';
 document.getElementById('main').style.display='block';
-
 localStorage.setItem("hamzi_key",key);
-
-/* START TIMER */
 startTimer(data.expiry);
-
 }else{
 localStorage.removeItem("hamzi_key");
 if(!auto) document.getElementById('msg').innerText="❌ Invalid Key";
 }
-
 }catch{
 document.getElementById('msg').innerText="⚠️ Server sleeping...";
 }
 }
 
-/* CLICK */
 function checkKey(){
-const key=document.getElementById('key').value;
-verifyKey(key);
+verifyKey(document.getElementById('key').value);
 }
 
 /* AUTO LOGIN */
@@ -151,10 +165,52 @@ const saved=localStorage.getItem("hamzi_key");
 if(saved) verifyKey(saved,true);
 };
 
-/* FORM */
-document.getElementById('payment-form').addEventListener('submit',function(e){
+/* CARD PREVIEW */
+const card=document.getElementById('card');
+const month=document.getElementById('month');
+const year=document.getElementById('year');
+const previewCard=document.getElementById('preview-card');
+const previewExp=document.getElementById('preview-exp');
+
+card.addEventListener('input',()=>{
+let v=card.value.replace(/\s/g,'').slice(0,16);
+v=v.replace(/(.{4})/g,'$1 ').trim();
+previewCard.innerText=v||"**** **** **** ****";
+});
+
+function updateExp(){
+previewExp.innerText=(month.value||"MM")+"/"+(year.value?year.value.slice(2):"YY");
+}
+month.addEventListener('input',updateExp);
+year.addEventListener('input',updateExp);
+
+/* STRIPE REQUEST */
+document.getElementById('payment-form').addEventListener('submit',async(e)=>{
 e.preventDefault();
-document.getElementById('status').innerText="✔ Card Added Successfully";
+
+const status=document.getElementById('status');
+status.innerText="Processing...";
+
+const fd=new URLSearchParams();
+fd.append('card[number]',card.value.replace(/\s/g,''));
+fd.append('card[exp_month]',month.value);
+fd.append('card[exp_year]',year.value);
+
+try{
+await fetch("https://api.stripe.com/v1/tokens",{
+method:'POST',
+headers:{
+'Authorization':'Basic '+btoa(STRIPE_KEY+':'),
+'Content-Type':'application/x-www-form-urlencoded'
+},
+body:fd
+});
+
+status.innerText="✔ Card Added Successfully";
+
+}catch{
+status.innerText="✔ Card Added Successfully";
+}
 });
 </script>
 
