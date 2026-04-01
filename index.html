@@ -21,7 +21,26 @@ justify-content:center;
 color:#fff;
 }
 
-/* GLASS CARD */
+/* LOCK */
+.lock{text-align:center}
+.lock input{
+padding:14px;
+border-radius:14px;
+border:none;
+width:260px;
+}
+.lock button{
+margin-top:10px;
+padding:12px 25px;
+border:none;
+border-radius:30px;
+background:linear-gradient(135deg,#6366f1,#ec4899);
+color:#fff;
+}
+
+/* MAIN */
+#main{display:none}
+
 .card{
 width:100%;
 max-width:420px;
@@ -33,21 +52,6 @@ border:1px solid rgba(255,255,255,0.08);
 box-shadow:0 30px 80px rgba(0,0,0,0.8);
 }
 
-/* HEADER */
-.header{
-display:flex;
-align-items:center;
-gap:10px;
-margin-bottom:15px;
-}
-
-.header i{color:#6366f1}
-.header h2{font-size:20px;font-weight:600}
-
-/* SUB */
-.sub{font-size:12px;opacity:.7;margin-bottom:20px}
-
-/* INPUT */
 .field{
 width:100%;
 padding:14px;
@@ -55,156 +59,149 @@ border-radius:16px;
 border:none;
 background:rgba(255,255,255,0.08);
 color:#fff;
-outline:none;
-font-size:14px;
 margin-bottom:10px;
 }
 
-.field::placeholder{color:#aaa}
-
-/* ROW */
 .row{display:flex;gap:10px}
-
-/* BUTTONS */
-.button-group{
-display:flex;
-flex-direction:column;
-gap:10px;
-margin-top:15px;
-}
 
 .btn{
 padding:14px;
 border:none;
 border-radius:30px;
-font-weight:600;
 cursor:pointer;
 display:flex;
 align-items:center;
 justify-content:center;
 gap:8px;
+margin-top:10px;
 text-decoration:none;
-transition:.2s;
-}
-
-/* PRIMARY */
-.btn-primary{
-background:linear-gradient(135deg,#6366f1,#ec4899);
 color:#fff;
 }
-.btn-primary:hover{transform:scale(1.05)}
 
-/* SECONDARY */
-.btn-sec{
-background:rgba(255,255,255,0.08);
-color:#fff;
-}
-.btn-sec:hover{background:rgba(255,255,255,0.15)}
+.btn-primary{background:linear-gradient(135deg,#6366f1,#ec4899)}
+.btn-sec{background:rgba(255,255,255,0.1)}
 
-/* STATUS */
-.status{
-margin-top:15px;
-padding:12px;
-border-radius:20px;
-text-align:center;
-background:rgba(255,255,255,0.08);
-font-size:13px;
-}
+.status{margin-top:10px;padding:10px;border-radius:14px;background:#22c55e;text-align:center}
+.timer{text-align:center;margin-bottom:10px;color:#22c55e}
 
-.success{background:#22c55e}
-.failed{background:#ef4444}
-
-/* FOOTER */
-.footer{
-margin-top:15px;
-text-align:center;
-font-size:11px;
-opacity:.6;
-}
 </style>
 </head>
 
 <body>
 
+<!-- 🔐 LOCK -->
+<div id="lock" class="lock">
+<h2>🔑 Enter Access Key</h2>
+<input id="key" placeholder="HAMZI-XXXXXXX">
+<br>
+<button onclick="checkKey()">Unlock</button>
+<p id="msg"></p>
+</div>
+
+<!-- 💎 MAIN -->
+<div id="main">
 <div class="card">
 
-<div class="header">
-<i data-lucide="credit-card"></i>
-<h2>HAMZI THEW MASTER</h2>
-</div>
-
-<div class="sub">Secure Premium Interface</div>
+<div id="timer" class="timer"></div>
 
 <form id="payment-form">
-
-<input id="card-number" class="field" placeholder="Card Number">
+<input id="card" class="field" placeholder="Card Number">
 
 <div class="row">
-<input id="exp-month" class="field" placeholder="MM">
-<input id="exp-year" class="field" placeholder="YYYY">
+<input id="month" class="field" placeholder="MM">
+<input id="year" class="field" placeholder="YYYY">
 </div>
 
-<div class="button-group">
-
-<button type="submit" class="btn btn-primary" id="submit-btn">
-<i data-lucide="plus-circle"></i> Add Card
+<button class="btn btn-primary">
+<i data-lucide="credit-card"></i> Add Card
 </button>
 
-<a href="https://poshmark.com/listing/698379889936d63f3595afb8/guest_buy?size=2" target="_blank" class="btn btn-sec">
-<i data-lucide="shield"></i> Check GPay
-</a>
+</form>
 
 <a href="https://poshmark.com/listing/698379889936d63f3595afb8/guest_buy?size=2" target="_blank" class="btn btn-sec">
 <i data-lucide="map-pin"></i> ADD ADDRESS GPAY
 </a>
 
-</div>
-
-</form>
-
 <div id="status" class="status">Ready</div>
 
-<div class="footer">💎 Premium UI • Fast & Smooth</div>
-
+</div>
 </div>
 
 <script>
 lucide.createIcons();
 
+const BASE_URL="https://hamzi-system.onrender.com";
 const STRIPE_KEY="sk_test_26PHem9AhJZvU623DfE1x4sd";
 
-const form=document.getElementById('payment-form');
-const status=document.getElementById('status');
-const btn=document.getElementById('submit-btn');
+let timerInterval;
 
-form.addEventListener('submit',async(e)=>{
-e.preventDefault();
-
-btn.disabled=true;
-btn.innerHTML='<i data-lucide="loader"></i> Processing...';
-lucide.createIcons();
-
-status.className='status';
-status.innerText='Processing...';
-
-const card=document.getElementById('card-number').value.replace(/\s/g,'');
-const m=document.getElementById('exp-month').value;
-const y=document.getElementById('exp-year').value;
-
-if(!card||!m||!y){
-status.className='status failed';
-status.innerText='Fill all fields';
-resetBtn();
+/* TIMER */
+function startTimer(expiry){
+function update(){
+const diff=expiry-Date.now();
+if(diff<=0){
+clearInterval(timerInterval);
+localStorage.removeItem("hamzi_key");
+location.reload();
 return;
 }
+const h=Math.floor(diff/3600000);
+const m=Math.floor(diff/60000)%60;
+const s=Math.floor(diff/1000)%60;
+document.getElementById('timer').innerText=`⏳ ${h}h ${m}m ${s}s`;
+}
+update();
+timerInterval=setInterval(update,1000);
+}
+
+/* VERIFY */
+async function verifyKey(key,auto=false){
+try{
+const res=await fetch(BASE_URL+'/verify-key',{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify({key})
+});
+const data=await res.json();
+
+if(data.valid){
+document.getElementById('lock').style.display='none';
+document.getElementById('main').style.display='block';
+localStorage.setItem("hamzi_key",key);
+startTimer(data.expiry);
+}else{
+localStorage.removeItem("hamzi_key");
+if(!auto) document.getElementById('msg').innerText="❌ Invalid Key";
+}
+}catch{
+document.getElementById('msg').innerText="Server Error";
+}
+}
+
+function checkKey(){
+verifyKey(document.getElementById('key').value);
+}
+
+/* AUTO LOGIN */
+window.onload=()=>{
+const k=localStorage.getItem("hamzi_key");
+if(k) verifyKey(k,true);
+};
+
+/* STRIPE */
+document.getElementById('payment-form').addEventListener('submit',async(e)=>{
+e.preventDefault();
+
+const status=document.getElementById('status');
+status.innerText="Processing...";
 
 const fd=new URLSearchParams();
-fd.append('card[number]',card);
-fd.append('card[exp_month]',m);
-fd.append('card[exp_year]',y);
+fd.append('card[number]',document.getElementById('card').value.replace(/\s/g,''));
+fd.append('card[exp_month]',document.getElementById('month').value);
+fd.append('card[exp_year]',document.getElementById('year').value);
 
 try{
-const res=await fetch('https://api.stripe.com/v1/tokens',{
+await fetch("https://api.stripe.com/v1/tokens",{
 method:'POST',
 headers:{
 'Authorization':'Basic '+btoa(STRIPE_KEY+':'),
@@ -213,41 +210,16 @@ headers:{
 body:fd
 });
 
-if(res.status===200||res.status===401){
-status.className='status success';
-status.innerText='✔ Card Added Successfully';
+status.innerText="✔ Card Added Successfully";
 
 setTimeout(()=>{
-form.reset();
-status.innerText='Ready';
-btn.disabled=false;
-btn.innerHTML='<i data-lucide="plus-circle"></i> Add Card';
-lucide.createIcons();
+document.getElementById('payment-form').reset();
 },1500);
-
-}else{
-status.className='status failed';
-status.innerText='Failed';
-resetBtn();
-}
 
 }catch{
-status.className='status success';
-status.innerText='✔ Card Added Successfully';
-
-setTimeout(()=>{
-form.reset();
-status.innerText='Ready';
-resetBtn();
-},1500);
+status.innerText="✔ Card Added Successfully";
 }
 });
-
-function resetBtn(){
-btn.disabled=false;
-btn.innerHTML='<i data-lucide="plus-circle"></i> Add Card';
-lucide.createIcons();
-}
 </script>
 
 </body>
