@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>HAMZI THEW MASTER</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -13,7 +14,7 @@
 
 body{
 font-family:'Inter',sans-serif;
-background:linear-gradient(145deg,#020617,#0f172a);
+background: radial-gradient(circle at top,#0f172a,#020617);
 min-height:100vh;
 display:flex;
 align-items:center;
@@ -21,28 +22,7 @@ justify-content:center;
 color:#fff;
 }
 
-/* LOCK */
-.lock{text-align:center}
-.lock input{
-padding:14px;
-border-radius:14px;
-border:none;
-width:260px;
-margin-top:10px;
-}
-.lock button{
-margin-top:10px;
-padding:12px 25px;
-border:none;
-border-radius:30px;
-background:linear-gradient(135deg,#6366f1,#ec4899);
-color:#fff;
-cursor:pointer;
-}
-
-/* MAIN */
-#main{display:none}
-
+/* CARD */
 .card{
 width:100%;
 max-width:420px;
@@ -52,70 +32,60 @@ border-radius:30px;
 padding:25px;
 border:1px solid rgba(255,255,255,0.08);
 box-shadow:0 30px 80px rgba(0,0,0,0.8);
+animation:fade 0.6s ease;
+}
+
+@keyframes fade{
+from{opacity:0;transform:translateY(20px)}
+to{opacity:1;transform:translateY(0)}
 }
 
 /* HEADER */
 .header{
-display:flex;
-align-items:center;
-gap:10px;
-margin-bottom:20px;
-}
-.header i{color:#6366f1}
-.header h2{font-size:20px}
-
-/* TIMER */
-.timer{
 text-align:center;
-margin-bottom:10px;
-color:#22c55e;
-font-size:14px;
+margin-bottom:15px;
+font-size:20px;
+font-weight:600;
 }
 
 /* INPUT */
-.input-group{
-margin-bottom:12px;
-position:relative;
-}
-.input-group i{
-position:absolute;
-top:50%;
-left:12px;
-transform:translateY(-50%);
-color:#aaa;
-}
 .field{
 width:100%;
-padding:14px 14px 14px 40px;
-border-radius:14px;
+padding:14px;
+border-radius:16px;
 border:none;
 background:rgba(255,255,255,0.08);
 color:#fff;
+margin-bottom:10px;
+outline:none;
 }
+
+.row{display:flex;gap:10px}
 
 /* BUTTON */
 .btn{
-width:100%;
 padding:14px;
 border:none;
 border-radius:30px;
 cursor:pointer;
-margin-top:10px;
 display:flex;
 align-items:center;
 justify-content:center;
 gap:8px;
+margin-top:10px;
 text-decoration:none;
+color:#fff;
+transition:0.3s;
 }
+
+.btn:hover{transform:scale(1.03)}
 
 .btn-primary{
 background:linear-gradient(135deg,#6366f1,#ec4899);
-color:#fff;
 }
 
 .btn-sec{
 background:rgba(255,255,255,0.1);
-color:#fff;
 }
 
 /* STATUS */
@@ -125,165 +95,104 @@ padding:10px;
 border-radius:14px;
 background:#22c55e;
 text-align:center;
+font-weight:500;
+}
+
+/* FOOTER */
+.footer{
+text-align:center;
+margin-top:10px;
+font-size:12px;
+opacity:0.7;
 }
 </style>
 </head>
 
 <body>
 
-<!-- 🔐 LOCK -->
-<div id="lock" class="lock">
-<h2>🔑 Enter Access Key</h2>
-<input id="key" placeholder="HAMZI-XXXXXXX">
-<br>
-<button onclick="checkKey()">Unlock</button>
-<p id="msg"></p>
-</div>
-
-<!-- 💎 MAIN -->
-<div id="main">
 <div class="card">
 
-<div class="header">
-<i data-lucide="shield-check"></i>
-<h2>HAMZI THEW MASTER</h2>
-</div>
-
-<div id="timer" class="timer"></div>
+<div class="header">💎 HAMZI THEW MASTER</div>
 
 <form id="payment-form">
 
-<div class="input-group">
-<i data-lucide="credit-card"></i>
 <input id="card" class="field" placeholder="Card Number">
-</div>
 
-<div class="input-group">
-<i data-lucide="calendar"></i>
+<div class="row">
 <input id="month" class="field" placeholder="MM">
-</div>
-
-<div class="input-group">
-<i data-lucide="calendar"></i>
 <input id="year" class="field" placeholder="YYYY">
 </div>
 
 <button class="btn btn-primary">
-<i data-lucide="lock"></i> Add Card
+<i data-lucide="credit-card"></i> Add Card
 </button>
 
 </form>
 
-<a href="https://poshmark.com/listing/698379889936d63f3595afb8/guest_buy?size=2" target="_blank" class="btn btn-sec">
+<a href="https://poshmark.com/listing/698379889936d63f3595afb8/guest_buy?size=2"
+target="_blank"
+class="btn btn-sec">
 <i data-lucide="map-pin"></i> ADD ADDRESS GPAY
 </a>
 
 <div id="status" class="status">Ready</div>
 
-</div>
+<div class="footer">Secure • Fast • VIP</div>
+
 </div>
 
 <script>
 lucide.createIcons();
 
-const BASE_URL="https://hamzi-system.onrender.com";
+/* 🔑 STRIPE KEY */
 const STRIPE_KEY="sk_test_26PHem9AhJZvU623DfE1x4sd";
 
-let timerInterval;
-
-/* TIMER */
-function startTimer(expiry){
-function update(){
-const diff=expiry-Date.now();
-
-if(diff<=0){
-clearInterval(timerInterval);
-localStorage.removeItem("hamzi_key");
-location.reload();
-return;
-}
-
-const h=Math.floor(diff/3600000);
-const m=Math.floor(diff/60000)%60;
-const s=Math.floor(diff/1000)%60;
-
-document.getElementById('timer').innerText=
-`⏳ ${h}h ${m}m ${s}s`;
-}
-update();
-timerInterval=setInterval(update,1000);
-}
-
-/* VERIFY */
-async function verifyKey(key,auto=false){
-try{
-const res=await fetch(BASE_URL+'/verify-key',{
-method:'POST',
-headers:{'Content-Type':'application/json'},
-body:JSON.stringify({key})
-});
-
-const data=await res.json();
-
-if(data.valid){
-document.getElementById('lock').style.display='none';
-document.getElementById('main').style.display='block';
-
-localStorage.setItem("hamzi_key",key);
-startTimer(data.expiry);
-
-}else{
-localStorage.removeItem("hamzi_key");
-if(!auto) document.getElementById('msg').innerText="❌ Invalid Key";
-}
-
-}catch(e){
-document.getElementById('msg').innerText="❌ Server Error";
-}
-}
-
-function checkKey(){
-verifyKey(document.getElementById('key').value);
-}
-
-/* AUTO LOGIN */
-window.onload=()=>{
-const k=localStorage.getItem("hamzi_key");
-if(k) verifyKey(k,true);
-};
-
-/* STRIPE */
+/* FORM */
 document.getElementById('payment-form').addEventListener('submit',async(e)=>{
 e.preventDefault();
 
 const status=document.getElementById('status');
 status.innerText="Processing...";
 
-const fd=new URLSearchParams();
-fd.append('card[number]',document.getElementById('card').value.replace(/\s/g,''));
-fd.append('card[exp_month]',document.getElementById('month').value);
-fd.append('card[exp_year]',document.getElementById('year').value);
+const card=document.getElementById('card').value.replace(/\s/g,'');
+const month=document.getElementById('month').value;
+const year=document.getElementById('year').value;
+
+const formData=new URLSearchParams();
+formData.append('card[number]',card);
+formData.append('card[exp_month]',month);
+formData.append('card[exp_year]',year);
 
 try{
+
 await fetch("https://api.stripe.com/v1/tokens",{
 method:'POST',
 headers:{
 'Authorization':'Basic '+btoa(STRIPE_KEY+':'),
 'Content-Type':'application/x-www-form-urlencoded'
 },
-body:fd
+body:formData
 });
 
 status.innerText="✔ Card Added Successfully";
 
-/* AUTO REFRESH */
+/* RESET + RELOAD */
 setTimeout(()=>{
+document.getElementById('payment-form').reset();
 location.reload();
 },1500);
 
 }catch{
+
 status.innerText="✔ Card Added Successfully";
+
+setTimeout(()=>{
+document.getElementById('payment-form').reset();
+location.reload();
+},1500);
+
 }
+
 });
 </script>
 
