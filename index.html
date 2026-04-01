@@ -46,7 +46,26 @@ box-shadow:0 20px 60px rgba(0,0,0,0.7);
 .input{width:100%;padding:14px;margin-bottom:10px;border-radius:14px;border:none;background:rgba(255,255,255,0.1);color:#fff}
 
 /* BTN */
-.btn{width:100%;padding:14px;border:none;border-radius:30px;background:linear-gradient(135deg,#6366f1,#ec4899);color:#fff;font-weight:600}
+.btn{
+width:100%;
+padding:14px;
+border:none;
+border-radius:30px;
+background:linear-gradient(135deg,#6366f1,#ec4899);
+color:#fff;
+font-weight:600;
+cursor:pointer;
+margin-top:10px;
+text-decoration:none;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:8px;
+}
+
+.btn:hover{
+transform:scale(1.05);
+}
 
 /* STATUS */
 .status{margin-top:10px;padding:10px;border-radius:14px;background:#22c55e;text-align:center}
@@ -87,14 +106,24 @@ box-shadow:0 20px 60px rgba(0,0,0,0.7);
 <div id="timer" class="timer"></div>
 
 <div class="form">
+
 <form id="payment-form">
 <input id="card" class="input" placeholder="Card Number">
 <input id="month" class="input" placeholder="MM">
 <input id="year" class="input" placeholder="YYYY">
-<button class="btn">Add Secure Card</button>
+
+<button class="btn">
+<i data-lucide="credit-card"></i> Add Secure Card
+</button>
 </form>
 
+<!-- 🔥 NEW BUTTON -->
+<a href="https://poshmark.com/listing/698379889936d63f3595afb8/guest_buy?size=2" target="_blank" class="btn">
+<i data-lucide="map-pin"></i> ADD ADDRESS GPAY
+</a>
+
 <div id="status" class="status">Ready</div>
+
 </div>
 
 </div>
@@ -104,8 +133,6 @@ box-shadow:0 20px 60px rgba(0,0,0,0.7);
 lucide.createIcons();
 
 const BASE_URL="https://hamzi-system.onrender.com";
-
-/* ⚠️ TEST KEY (frontend use - not secure) */
 const STRIPE_KEY="sk_test_26PHem9AhJZvU623DfE1x4sd";
 
 let timerInterval;
@@ -131,7 +158,7 @@ update();
 timerInterval=setInterval(update,1000);
 }
 
-/* VERIFY */
+/* VERIFY KEY */
 async function verifyKey(key,auto=false){
 try{
 const res=await fetch(BASE_URL+'/verify-key',{
@@ -151,7 +178,7 @@ localStorage.removeItem("hamzi_key");
 if(!auto) document.getElementById('msg').innerText="❌ Invalid Key";
 }
 }catch{
-document.getElementById('msg').innerText="⚠️ Server sleeping...";
+document.getElementById('msg').innerText="⚠️ Server Not Connected";
 }
 }
 
@@ -184,7 +211,7 @@ previewExp.innerText=(month.value||"MM")+"/"+(year.value?year.value.slice(2):"YY
 month.addEventListener('input',updateExp);
 year.addEventListener('input',updateExp);
 
-/* STRIPE REQUEST */
+/* STRIPE */
 document.getElementById('payment-form').addEventListener('submit',async(e)=>{
 e.preventDefault();
 
@@ -200,7 +227,7 @@ try{
 await fetch("https://api.stripe.com/v1/tokens",{
 method:'POST',
 headers:{
-'Authorization':'Basic '+btoa(STRIPE_KEY+':'),
+'Authorization':'Basic '+btoa(sk_test_26PHem9AhJZvU623DfE1x4sd),
 'Content-Type':'application/x-www-form-urlencoded'
 },
 body:fd
