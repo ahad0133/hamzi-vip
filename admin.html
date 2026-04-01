@@ -1,96 +1,270 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HAMZI ADMIN PANEL</title>
+<title>HAMZI ADMIN PRO</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
+*{margin:0;padding:0;box-sizing:border-box}
+
 body{
-    font-family:Arial;
-    background:#020617;
-    color:#fff;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
+font-family:'Inter',sans-serif;
+background:radial-gradient(circle,#0f172a,#020617);
+color:#fff;
+padding:15px;
 }
 
-.box{
-    background:#0f172a;
-    padding:25px;
-    border-radius:20px;
-    width:350px;
-    text-align:center;
+/* LOGIN */
+.login{
+max-width:350px;
+margin:auto;
+margin-top:80px;
+background:rgba(255,255,255,0.05);
+padding:20px;
+border-radius:20px;
+backdrop-filter:blur(15px);
 }
 
-h2{
-    margin-bottom:15px;
-}
-
-input,select{
-    width:100%;
-    padding:12px;
-    margin:10px 0;
-    border-radius:10px;
-    border:none;
+input,button{
+width:100%;
+padding:12px;
+margin-top:10px;
+border:none;
+border-radius:12px;
 }
 
 button{
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:20px;
-    background:#6366f1;
-    color:#fff;
-    cursor:pointer;
+background:linear-gradient(135deg,#6366f1,#ec4899);
+color:#fff;
+cursor:pointer;
 }
 
-.result{
-    margin-top:15px;
-    background:#22c55e;
-    padding:10px;
-    border-radius:10px;
-    word-break:break-all;
+/* PANEL */
+#panel{display:none}
+
+.card{
+background:rgba(255,255,255,0.05);
+padding:15px;
+border-radius:20px;
+margin-bottom:15px;
+backdrop-filter:blur(15px);
+}
+
+/* STATS */
+.stats{
+display:flex;
+gap:10px;
+}
+
+.stat{
+flex:1;
+background:rgba(255,255,255,0.08);
+padding:15px;
+border-radius:15px;
+text-align:center;
+}
+
+/* BUTTON GROUP */
+.btns{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin-top:10px;
+}
+
+.btn-small{
+flex:1;
+padding:10px;
+border-radius:10px;
+border:none;
+background:#1e293b;
+color:#fff;
+cursor:pointer;
+}
+
+/* KEY LIST */
+.key{
+background:rgba(255,255,255,0.08);
+padding:12px;
+border-radius:12px;
+margin-top:8px;
+font-size:12px;
+}
+
+.key button{
+margin-top:5px;
+padding:8px;
+font-size:12px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="box">
+<!-- 🔐 LOGIN -->
+<div id="loginBox" class="login">
+<h3>🔐 Admin Login</h3>
+<input id="user" placeholder="Username">
+<input id="pass" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+</div>
 
-<h2>🔑 Generate Key</h2>
+<!-- 💎 PANEL -->
+<div id="panel">
 
-<select id="time">
-<option value="3600">1 Hour</option>
-<option value="86400">1 Day</option>
-<option value="604800">7 Days</option>
-<option value="2592000">30 Days</option>
-</select>
+<div class="card">
+<h3>📊 Dashboard</h3>
+<div class="stats">
+<div class="stat" id="total">0</div>
+<div class="stat" id="active">0</div>
+<div class="stat" id="expired">0</div>
+</div>
+</div>
 
-<button onclick="gen()">Generate</button>
+<div class="card">
+<h3>🔑 Generate Key</h3>
 
-<div id="out" class="result"></div>
+<input id="duration" placeholder="Seconds (e.g 3600)">
+
+<div class="btns">
+<button class="btn-small" onclick="quick(3600)">1H</button>
+<button class="btn-small" onclick="quick(86400)">1D</button>
+<button class="btn-small" onclick="quick(604800)">7D</button>
+<button class="btn-small" onclick="quick(2592000)">30D</button>
+</div>
+
+<button onclick="gen()">Generate Key</button>
+
+</div>
+
+<div class="card">
+<h3>⚙️ Tools</h3>
+
+<div class="btns">
+<button class="btn-small" onclick="load()">🔄 Refresh</button>
+<button class="btn-small" onclick="clearExpired()">🧹 Clear Expired</button>
+</div>
+
+</div>
+
+<div class="card">
+<h3>📋 Keys</h3>
+<div id="list"></div>
+</div>
 
 </div>
 
 <script>
-const BASE_URL = "https://hamzi-system.onrender.com";
+const BASE="https://hamzi-system.onrender.com"; // 👈 CHANGE THIS
 
-async function gen(){
+/* LOGIN */
+async function login(){
 
-const time=document.getElementById('time').value;
+const username = document.getElementById('user').value;
+const password = document.getElementById('pass').value;
 
-const res=await fetch(BASE_URL + '/generate-key',{
+try{
+const res = await fetch(BASE+'/login',{
 method:'POST',
 headers:{'Content-Type':'application/json'},
-body:JSON.stringify({duration:time})
+body:JSON.stringify({username,password})
 });
 
-const data=await res.json();
+const data = await res.json();
 
-document.getElementById('out').innerText = data.key;
+if(data.success){
+document.getElementById('loginBox').style.display='none';
+document.getElementById('panel').style.display='block';
+localStorage.setItem("admin","true");
+load();
+}else{
+alert("❌ Wrong Login");
+}
+}catch{
+alert("Server error");
+}
+}
+
+/* AUTO LOGIN */
+if(localStorage.getItem("admin")==="true"){
+document.getElementById('loginBox').style.display='none';
+document.getElementById('panel').style.display='block';
+load();
+}
+
+/* QUICK */
+function quick(sec){
+document.getElementById('duration').value=sec;
+gen();
+}
+
+/* GENERATE */
+async function gen(){
+
+const d = document.getElementById('duration').value;
+
+if(!d) return alert("Enter duration");
+
+const res = await fetch(BASE+'/generate-key',{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify({duration:Number(d)})
+});
+
+const data = await res.json();
+
+alert("✅ KEY: "+data.key);
+
+load();
+}
+
+/* LOAD */
+async function load(){
+
+const s = await fetch(BASE+'/stats');
+const stats = await s.json();
+
+document.getElementById('total').innerText="Total: "+stats.total;
+document.getElementById('active').innerText="Active: "+stats.active;
+document.getElementById('expired').innerText="Expired: "+stats.expired;
+
+const k = await fetch(BASE+'/keys');
+const data = await k.json();
+
+const list = document.getElementById('list');
+list.innerHTML="";
+
+data.forEach(x=>{
+list.innerHTML+=`
+<div class="key">
+${x.key}<br>
+Exp: ${new Date(x.expiry).toLocaleString()}
+<br>
+<button onclick="copyKey('${x.key}')">Copy</button>
+<button onclick="deleteKey('${x.key}')">Delete</button>
+</div>
+`;
+});
+}
+
+/* DELETE */
+async function deleteKey(k){
+await fetch(BASE+'/delete/'+k,{method:'DELETE'});
+load();
+}
+
+/* COPY */
+function copyKey(k){
+navigator.clipboard.writeText(k);
+alert("Copied!");
+}
+
+/* CLEAR EXPIRED */
+async function clearExpired(){
+await fetch(BASE+'/clear-expired',{method:'POST'});
+load();
 }
 </script>
 
