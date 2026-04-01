@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HAMZI ADMIN PRO</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -64,6 +66,7 @@ background:rgba(255,255,255,0.08);
 padding:15px;
 border-radius:15px;
 text-align:center;
+font-weight:600;
 }
 
 /* BUTTON GROUP */
@@ -97,6 +100,7 @@ font-size:12px;
 margin-top:5px;
 padding:8px;
 font-size:12px;
+width:auto;
 }
 </style>
 </head>
@@ -104,7 +108,7 @@ font-size:12px;
 <body>
 
 <!-- 🔐 LOGIN -->
-<div id="loginBox" class="login">
+<div id="login" class="login">
 <h3>🔐 Admin Login</h3>
 <input id="user" placeholder="Username">
 <input id="pass" type="password" placeholder="Password">
@@ -126,7 +130,7 @@ font-size:12px;
 <div class="card">
 <h3>🔑 Generate Key</h3>
 
-<input id="duration" placeholder="Seconds (e.g 3600)">
+<input id="duration" placeholder="Custom seconds">
 
 <div class="btns">
 <button class="btn-small" onclick="quick(3600)">1H</button>
@@ -135,8 +139,7 @@ font-size:12px;
 <button class="btn-small" onclick="quick(2592000)">30D</button>
 </div>
 
-<button onclick="gen()">Generate Key</button>
-
+<button onclick="gen()">Generate Custom</button>
 </div>
 
 <div class="card">
@@ -157,41 +160,30 @@ font-size:12px;
 </div>
 
 <script>
-const BASE="https://hamzi-system.onrender.com"; // 👈 CHANGE THIS
+lucide.createIcons();
 
-/* LOGIN */
+const BASE="https://hamzi-system.onrender.com";
+
+/* 🔐 LOGIN */
 async function login(){
-
-const username = document.getElementById('user').value;
-const password = document.getElementById('pass').value;
-
-try{
-const res = await fetch(BASE+'/login',{
+const res=await fetch(BASE+'/login',{
 method:'POST',
 headers:{'Content-Type':'application/json'},
-body:JSON.stringify({username,password})
+body:JSON.stringify({
+username:document.getElementById('user').value,
+password:document.getElementById('pass').value
+})
 });
 
-const data = await res.json();
+const d=await res.json();
 
-if(data.success){
-document.getElementById('loginBox').style.display='none';
+if(d.success){
+document.getElementById('login').style.display='none';
 document.getElementById('panel').style.display='block';
-localStorage.setItem("admin","true");
 load();
 }else{
 alert("❌ Wrong Login");
 }
-}catch{
-alert("Server error");
-}
-}
-
-/* AUTO LOGIN */
-if(localStorage.getItem("admin")==="true"){
-document.getElementById('loginBox').style.display='none';
-document.getElementById('panel').style.display='block';
-load();
 }
 
 /* QUICK */
@@ -202,18 +194,17 @@ gen();
 
 /* GENERATE */
 async function gen(){
-
-const d = document.getElementById('duration').value;
+const d=document.getElementById('duration').value;
 
 if(!d) return alert("Enter duration");
 
-const res = await fetch(BASE+'/generate-key',{
+const res=await fetch(BASE+'/generate-key',{
 method:'POST',
 headers:{'Content-Type':'application/json'},
-body:JSON.stringify({duration:Number(d)})
+body:JSON.stringify({duration:d})
 });
 
-const data = await res.json();
+const data=await res.json();
 
 alert("✅ KEY: "+data.key);
 
@@ -223,17 +214,17 @@ load();
 /* LOAD */
 async function load(){
 
-const s = await fetch(BASE+'/stats');
-const stats = await s.json();
+const s=await fetch(BASE+'/stats');
+const stats=await s.json();
 
 document.getElementById('total').innerText="Total: "+stats.total;
 document.getElementById('active').innerText="Active: "+stats.active;
 document.getElementById('expired').innerText="Expired: "+stats.expired;
 
-const k = await fetch(BASE+'/keys');
-const data = await k.json();
+const k=await fetch(BASE+'/keys');
+const data=await k.json();
 
-const list = document.getElementById('list');
+const list=document.getElementById('list');
 list.innerHTML="";
 
 data.forEach(x=>{
@@ -243,14 +234,14 @@ ${x.key}<br>
 Exp: ${new Date(x.expiry).toLocaleString()}
 <br>
 <button onclick="copyKey('${x.key}')">Copy</button>
-<button onclick="deleteKey('${x.key}')">Delete</button>
+<button onclick="delKey('${x.key}')">Delete</button>
 </div>
 `;
 });
 }
 
 /* DELETE */
-async function deleteKey(k){
+async function delKey(k){
 await fetch(BASE+'/delete/'+k,{method:'DELETE'});
 load();
 }
@@ -261,7 +252,7 @@ navigator.clipboard.writeText(k);
 alert("Copied!");
 }
 
-/* CLEAR EXPIRED */
+/* CLEAR */
 async function clearExpired(){
 await fetch(BASE+'/clear-expired',{method:'POST'});
 load();
