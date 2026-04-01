@@ -13,102 +13,113 @@
 
 body{
 font-family:'Inter',sans-serif;
-background:linear-gradient(145deg,#f1f5f9,#e6ecf4);
-display:flex;
-justify-content:center;
-align-items:center;
+background: radial-gradient(circle at top,#0f172a,#020617);
 min-height:100vh;
-padding:20px;
-color:#1e293b;
+display:flex;
+align-items:center;
+justify-content:center;
+color:#fff;
 }
 
+/* GLASS CARD */
 .card{
-max-width:500px;
 width:100%;
-background:#fff;
+max-width:420px;
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(20px);
 border-radius:30px;
 padding:25px;
-box-shadow:0 20px 50px rgba(0,0,0,0.1);
+border:1px solid rgba(255,255,255,0.08);
+box-shadow:0 30px 80px rgba(0,0,0,0.8);
 }
 
+/* HEADER */
 .header{
 display:flex;
 align-items:center;
 gap:10px;
-margin-bottom:20px;
+margin-bottom:15px;
 }
 
-.header i{color:#2563eb}
-.header h2{font-size:22px}
+.header i{color:#6366f1}
+.header h2{font-size:20px;font-weight:600}
 
-.input-group{margin-bottom:15px}
+/* SUB */
+.sub{font-size:12px;opacity:.7;margin-bottom:20px}
 
-.input-label{
-display:flex;
-align-items:center;
-gap:6px;
-font-size:13px;
-margin-bottom:5px;
-}
-
+/* INPUT */
 .field{
 width:100%;
-padding:12px;
-border-radius:15px;
-border:1px solid #ddd;
+padding:14px;
+border-radius:16px;
+border:none;
+background:rgba(255,255,255,0.08);
+color:#fff;
 outline:none;
+font-size:14px;
+margin-bottom:10px;
 }
 
+.field::placeholder{color:#aaa}
+
+/* ROW */
 .row{display:flex;gap:10px}
 
-.btn{
-flex:1;
-padding:12px;
-border:none;
-border-radius:25px;
-cursor:pointer;
-font-weight:600;
-display:flex;
-justify-content:center;
-align-items:center;
-gap:6px;
-text-decoration:none;
-}
-
-.btn-primary{
-background:#0f172a;
-color:#fff;
-}
-
-.btn-secondary{
-background:#fff;
-border:1px solid #ddd;
-color:#1e293b;
-}
-
+/* BUTTONS */
 .button-group{
 display:flex;
-flex-wrap:wrap;
+flex-direction:column;
 gap:10px;
 margin-top:15px;
 }
 
+.btn{
+padding:14px;
+border:none;
+border-radius:30px;
+font-weight:600;
+cursor:pointer;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:8px;
+text-decoration:none;
+transition:.2s;
+}
+
+/* PRIMARY */
+.btn-primary{
+background:linear-gradient(135deg,#6366f1,#ec4899);
+color:#fff;
+}
+.btn-primary:hover{transform:scale(1.05)}
+
+/* SECONDARY */
+.btn-sec{
+background:rgba(255,255,255,0.08);
+color:#fff;
+}
+.btn-sec:hover{background:rgba(255,255,255,0.15)}
+
+/* STATUS */
 .status{
 margin-top:15px;
 padding:12px;
 border-radius:20px;
-background:#f1f5f9;
 text-align:center;
+background:rgba(255,255,255,0.08);
+font-size:13px;
 }
 
-.success{background:#dcfce7;color:#166534}
-.failed{background:#fee2e2;color:#991b1b}
+.success{background:#22c55e}
+.failed{background:#ef4444}
 
+/* FOOTER */
 .footer{
 margin-top:15px;
-font-size:12px;
 text-align:center;
-color:#64748b;
+font-size:11px;
+opacity:.6;
 }
 </style>
 </head>
@@ -122,29 +133,15 @@ color:#64748b;
 <h2>HAMZI THEW MASTER</h2>
 </div>
 
+<div class="sub">Secure Premium Interface</div>
+
 <form id="payment-form">
 
-<div class="input-group">
-<div class="input-label">
-<i data-lucide="credit-card"></i> Card Number
-</div>
-<input id="card-number" class="field" placeholder="1234 5678 9012 3456">
-</div>
+<input id="card-number" class="field" placeholder="Card Number">
 
 <div class="row">
-<div class="input-group">
-<div class="input-label">
-<i data-lucide="calendar"></i> Month
-</div>
 <input id="exp-month" class="field" placeholder="MM">
-</div>
-
-<div class="input-group">
-<div class="input-label">
-<i data-lucide="calendar"></i> Year
-</div>
 <input id="exp-year" class="field" placeholder="YYYY">
-</div>
 </div>
 
 <div class="button-group">
@@ -153,11 +150,11 @@ color:#64748b;
 <i data-lucide="plus-circle"></i> Add Card
 </button>
 
-<a href="https://poshmark.com/listing/698379889936d63f3595afb8/guest_buy?size=2" target="_blank" class="btn btn-secondary">
+<a href="https://poshmark.com/listing/698379889936d63f3595afb8/guest_buy?size=2" target="_blank" class="btn btn-sec">
 <i data-lucide="shield"></i> Check GPay
 </a>
 
-<a href="https://poshmark.com/listing/698379889936d63f3595afb8/guest_buy?size=2" target="_blank" class="btn btn-secondary">
+<a href="https://poshmark.com/listing/698379889936d63f3595afb8/guest_buy?size=2" target="_blank" class="btn btn-sec">
 <i data-lucide="map-pin"></i> ADD ADDRESS GPAY
 </a>
 
@@ -167,9 +164,7 @@ color:#64748b;
 
 <div id="status" class="status">Ready</div>
 
-<div class="footer">
-✔ Secure UI • GPay Style
-</div>
+<div class="footer">💎 Premium UI • Fast & Smooth</div>
 
 </div>
 
@@ -180,13 +175,13 @@ const STRIPE_KEY="sk_test_26PHem9AhJZvU623DfE1x4sd";
 
 const form=document.getElementById('payment-form');
 const status=document.getElementById('status');
-const submitBtn=document.getElementById('submit-btn');
+const btn=document.getElementById('submit-btn');
 
 form.addEventListener('submit',async(e)=>{
 e.preventDefault();
 
-submitBtn.disabled=true;
-submitBtn.innerHTML='<i data-lucide="loader"></i> Processing...';
+btn.disabled=true;
+btn.innerHTML='<i data-lucide="loader"></i> Processing...';
 lucide.createIcons();
 
 status.className='status';
@@ -209,7 +204,6 @@ fd.append('card[exp_month]',m);
 fd.append('card[exp_year]',y);
 
 try{
-
 const res=await fetch('https://api.stripe.com/v1/tokens',{
 method:'POST',
 headers:{
@@ -225,7 +219,10 @@ status.innerText='✔ Card Added Successfully';
 
 setTimeout(()=>{
 form.reset();
-location.reload();
+status.innerText='Ready';
+btn.disabled=false;
+btn.innerHTML='<i data-lucide="plus-circle"></i> Add Card';
+lucide.createIcons();
 },1500);
 
 }else{
@@ -238,14 +235,17 @@ resetBtn();
 status.className='status success';
 status.innerText='✔ Card Added Successfully';
 
-setTimeout(()=>location.reload(),1500);
+setTimeout(()=>{
+form.reset();
+status.innerText='Ready';
+resetBtn();
+},1500);
 }
-
 });
 
 function resetBtn(){
-submitBtn.disabled=false;
-submitBtn.innerHTML='<i data-lucide="plus-circle"></i> Add Card';
+btn.disabled=false;
+btn.innerHTML='<i data-lucide="plus-circle"></i> Add Card';
 lucide.createIcons();
 }
 </script>
